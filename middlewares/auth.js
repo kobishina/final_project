@@ -32,13 +32,13 @@ exports.authAdmin = (req, res, next) => {
         let decodeToken = jwt.verify(token, "kobiProject");
         if (decodeToken.role != "admin") {
 
-            return res.status(401).json({ msg: "just admin can be in theis endPoint" });
+            return res.status(401).json({ msg: "just admin can be in this endPoint" });
         }
         req.tokenData = decodeToken;
         next();
     }
     catch (err) {
-        return req.status(401).json({ msg: "token invalid Or expired" });
+        return res.status(401).json({ msg: "token invalid Or expired" });
     }
 }
 

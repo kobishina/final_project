@@ -1,6 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const { auth } = require("../middlewares/auth");
+const { auth, authAdmin } = require("../middlewares/auth");
 const { UserModel, validateUser, validateLogin, createToken } = require("../models/userModel");
 const { valid } = require("joi");
 
@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
     res.json({ msg: "users endPoint" });
 })
 
-// basic info about the users 
+// basic info about the users by sending the correct token
 router.get("/userInfo", auth, async (req, res) => {
     try {
         let user = await UserModel.findOne({ _id: req.tokenData.id }, { password: 0 });
@@ -77,16 +77,43 @@ router.post("/login", async (req, res) => {
     }
 
 })
-//delete user by admin only
-// router.delete("/:id", authAdmin, async (req, res) => {
-//     try {
-//         let id = req.params.id;
-//         let data = await CategoryModel.deleteOne({ _id: id });
-//         res.json(data);
-//     }
-//     catch (err) {
-//         console.log(err);
-//         res.status(502).json({ err })
-//     }
-// })
+
+// ?user_id= &role=
+// משנה תפקיד של משתמש
+//change the role of user by admin only
+router.patch("/:id", authAdmin, async (req, res) => {
+    try {
+       
+        //will change the role of the user just by admin only
+        let user_id = req.params.id;
+        let role = req.body.role;
+
+        // // לא מאפשר למשתמש עצמו לשנות את התפקיד שלו
+        // // או לשנות את הסופר אדמין
+        // if (user_id == req.tokenData.id || user_id == "63b13b2750267011bebf32be") {
+        //     return res.status(401).json({ msg: "You try to change yourself or the superadmin" })
+        // }
+        
+        let data = await UserModel.updateOne({ _id: user_id }, { role: role })
+        res.json(data);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+    }
+})
+
+// delete user by admin only
+router.delete("/:id", authAdmin, async (req, res) => {
+    try {
+        let id = req.params.id;
+        let data = await UserModel.deleteOne({ _id: id });
+        res.json(data);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(502).json({ err })
+    }
+})
+
 module.exports = router;
