@@ -21,7 +21,7 @@ exports.UserModel = mongoose.model("users", userSchema);
 
 //createing token that includs the role if admin or user and valid for 10 hours
 exports.createToken = (user_id, role) => {
-    let token = jwt.sign({ id: user_id, role: role }, "kobiProject", { expiresIn: "600mins" });
+    let token = jwt.sign({ _id: user_id, role: role }, "kobiProject", { expiresIn: "600mins" });
     return token;
 }
 

@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
 // basic info about the users by sending the correct token
 router.get("/userInfo", auth, async (req, res) => {
     try {
-        let user = await UserModel.findOne({ _id: req.tokenData.id }, { password: 0 });
+        let user = await UserModel.findOne({ _id: req.tokenData._id }, { password: 0 });
         res.json(user);
     }
     catch (err) {

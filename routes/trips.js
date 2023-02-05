@@ -61,6 +61,8 @@ router.get("/count", async (req, res) => {
     }
 })
 
+
+
 //post sending data to the server and getting the token to know who  user add it
 router.post("/", auth, async (req, res) => {
     let validBody = validateTrip(req.body);
@@ -70,11 +72,11 @@ router.post("/", auth, async (req, res) => {
     }
     try {
         let trip = new TripModel(req.body);
-        //will use the token to put the comment by same user from user collection // but its not working
-        trip.user_id = req.tokenData._id;
+        //use the token to know who the user post it from user collection 
+        trip.userId_created = req.tokenData._id;
+
         await trip.save();
-        res.json(trip);
-        console.log(req.tokenData._id);
+        res.status(201).json(trip);
     }
     catch (err) {
         console.log(err);
@@ -95,9 +97,10 @@ router.put("/:id", auth, async (req, res) => {
         if (req.tokenData.role == "admin") {
             data = await TripModel.updateOne({ _id: id }, req.body);
         }
-        //and if he some user so can edit just himSelf and checked by token are includs the Id 
+        //and if he some user, so can edit just himSelf and checked by token are includs the Id 
         else {
-            data = await TripModel.updateOne({ _id: id, user_id: req.tokenData._id }, req.body);
+            data = await TripModel.updateOne({ _id: id, userId_created: req.tokenData._id }, req.body);
+            console.log(req.tokenData._id);
 
         }
         res.json(data);
@@ -108,7 +111,8 @@ router.put("/:id", auth, async (req, res) => {
     }
 })
 
-// dlete all by admin and user just himself 
+
+// delete all by admin and user just himself 
 router.delete("/:id", auth, async (req, res) => {
     let id = req.params.id;
     let data;
@@ -121,7 +125,7 @@ router.delete("/:id", auth, async (req, res) => {
         }
         //and if not admin so can delete just himSelf and checked by token are includs the Id 
         else {
-            data = await TripModel.deleteOne({ _id: id, user_id: req.tokenData._id });
+            data = await TripModel.deleteOne({ _id: id, userId_created: req.tokenData._id });
         }
         res.json(data);
     }
@@ -130,8 +134,5 @@ router.delete("/:id", auth, async (req, res) => {
         res.status(502).json({ err });
     }
 })
-// toDo check that only admin can change all
-// that all user can edit or delete himself only
-// that user id will go aoutomaticly from users 
-// put delete 
+
 module.exports = router;
