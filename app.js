@@ -6,6 +6,8 @@ const path = require("path");
 const http = require("http");
 // cors allowd you connect for diffrent address without security problem
 const cors = require("cors");
+// allowd you uploads file into a public filder
+const fileUpload = require("express-fileupload");
 
 //call to the routs from routsInit.js file
 const { routesInit } = require("./routes/configRoutes");
@@ -15,6 +17,12 @@ require("./db/mongoConnect");
 const app = express();
 //middelware for cors
 app.use(cors());
+
+//fileUploading
+app.use(fileUpload({
+    limits: { fileSize: 1024 * 1024 * 5 }
+}))
+
 //the server can get info of json even  not using a get method
 app.use(express.json());
 //expose public folder to client side

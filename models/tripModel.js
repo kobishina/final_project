@@ -5,13 +5,14 @@ const Joi = require("joi");
 
 const tripSchema = new mongoose.Schema({
 
-    towns_id: String,
+
     travel_purpose: String,
     travel_dates: String,
     comments: String,
     score: Number,
-    another_recomended_places: String,
     userId_created: String,
+    townId_name: String,
+    place_id: String,
     date_created: {
         type: Date, default: Date.now
     }
@@ -31,13 +32,12 @@ exports.TripModel = mongoose.model("trips", tripSchema);
 exports.validateTrip = (_reqBody) => {
     let joiSchema = Joi.object({
 
-        towns_id: Joi.string().min(2).max(150).required(),
+        townId_name: Joi.string().min(2).max(150).required(),
         travel_purpose: Joi.string().min(3).max(150).required(),
         travel_dates: Joi.string().min(2).max(150).required(),
         comments: Joi.string().min(2).max(150).required(),
         score: Joi.number().min(2).max(150).required(),
-        another_recomended_places: Joi.string().min(2).max(150).required(),
-        // userId_created: joi.string().min(2).max(150).required()
+        place_id: Joi.string().min(1).max(150).required()
     })
     return joiSchema.validate(_reqBody);
 }

@@ -23,6 +23,21 @@ router.get("/userInfo", auth, async (req, res) => {
     }
 })
 
+//bring just one by his id that will getting the info about him(from client side) and can edit it easely 
+//http://localhost:3002/users/single/63da61eaafc460ddf48f5c5c
+
+router.get("/single/:id", async (req, res) => {
+    try {
+        let data = await UserModel.findOne({ _id: req.params.id }, { password: 0 });
+        res.json(data);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(502).json({ err });
+    }
+})
+
+
 //sign up user
 router.post("/", async (req, res) => {
     let validBody = validateUser(req.body);
@@ -42,7 +57,7 @@ router.post("/", async (req, res) => {
     catch (err) {
         // check if email already in system
         if (err.code == 11000) {
-            return res.status(400).json({ msg: "email already exsist", code: 11000 })
+            return res.status(400).json({ msg: "email already exsist!", code: 11000 })
         }
         console.log(err);
         res.status(502).json({ err })
@@ -83,7 +98,7 @@ router.post("/login", async (req, res) => {
 //change the role of user by admin only
 router.patch("/:id", authAdmin, async (req, res) => {
     try {
-       
+
         //will change the role of the user just by admin only
         let user_id = req.params.id;
         let role = req.body.role;
@@ -93,7 +108,7 @@ router.patch("/:id", authAdmin, async (req, res) => {
         // if (user_id == req.tokenData.id || user_id == "63b13b2750267011bebf32be") {
         //     return res.status(401).json({ msg: "You try to change yourself or the superadmin" })
         // }
-        
+
         let data = await UserModel.updateOne({ _id: user_id }, { role: role })
         res.json(data);
     }
